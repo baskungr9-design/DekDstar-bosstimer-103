@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1r00t - Party Boss Timer</title>
+    <title>N1r00t - Party Boss Timer (Sound Mode)</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; }
         .container { max-width: 850px; margin: 0 auto; background: #1e1e1e; padding: 25px; border-radius: 15px; box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); border: 1px solid #333; }
@@ -22,7 +22,9 @@
         .btn-add:hover { background-color: #00cc6a; transform: translateY(-2px); }
         .label-text { color: #00ff88; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; }
 
-        .boss-card { background: #262626; padding: 18px; margin-bottom: 15px; border-left: 6px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: 0.3s; }
+        #bossList { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+
+        .boss-card { background: #262626; padding: 18px; border-left: 6px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: 0.3s; }
         .boss-info { display: flex; align-items: center; gap: 20px; }
         .ch-badge { background: #00ff88; color: #000; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 1.2rem; min-width: 60px; text-align: center; box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
         .boss-name { font-size: 1.25rem; font-weight: bold; color: #fff; }
@@ -36,20 +38,18 @@
         
         .btn-reset { background: #ffaa00; color: #000; padding: 10px 18px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 #cc8800; }
         .btn-reset:hover { background: #e69900; transform: translateY(2px); box-shadow: 0 2px 0 #cc8800; }
-        .btn-reset:active { transform: translateY(4px); box-shadow: none; }
         
         .btn-delete { background: #444; color: #ccc; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-delete:hover { background: #ff4757; color: white; }
 
         @keyframes blink { 50% { opacity: 0.3; } }
-        #bossList { margin-top: 30px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>⚔️ Indignabt Nebulas Timer ⚔️</h2>
-    <div class="sub-title">ด่าน 103 | คูลดาวน์ 4 ชม.</div>
+    <div class="sub-title">ด่าน 103 | เสียงเตือนอัตโนมัติ 🔊</div>
     <div class="server-status">🟢 Online & Synced via Firebase</div>
     
     <div class="input-group">
@@ -66,30 +66,40 @@
         
         <div style="display:flex; flex-direction:column; gap:5px; flex:2;">
             <span class="label-text">ชื่อบอส</span>
-            <input type="text" id="bossName" list="presetBosses" value="Indignabt Nebulas (ด่าน 103)">
-            <datalist id="presetBosses">
-                <option value="Indignabt Nebulas (ด่าน 103)"></option>
-            </datalist>
+            <input type="text" id="bossName" value="Indignabt Nebulas (ด่าน 103)">
         </div>
         
         <div style="display:flex; flex-direction:column; gap:5px;">
             <span class="label-text">อีกกี่นาทีเกิด?</span>
-            <input type="number" id="minUntilSpawn" placeholder="กรอกนาที" min="0">
+            <input type="number" id="minUntilSpawn" placeholder="นาที" min="0">
         </div>
         
         <button class="btn-add" onclick="window.addBoss()">➕ เพิ่มเข้ารายการ</button>
     </div>
 
-    <div id="bossList">
-        <div style="text-align:center; color:#888;">กำลังเชื่อมต่อฐานข้อมูล...</div>
-    </div>
+    <div id="bossList"></div>
 </div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, duration) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = freq;
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + duration);
+    }
+</script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // กุญแจของคุณ
     const firebaseConfig = {
       apiKey: "AIzaSyCypbGzxD2cr9xt1LaPDpClQ_8ta8ElKqs",
       authDomain: "dekd-bosstimer.firebaseapp.com",
@@ -105,151 +115,102 @@
     const db = getDatabase(app);
     const bossesRef = ref(db, 'bosses');
 
-    const COOLDOWN_MINUTES = 240; // 4 ชั่วโมง
-    let activeTimers = {}; // ตัวแปรเก็บเวลานับถอยหลังทั้งหมด
+    const COOLDOWN_MINUTES = 240; 
+    let activeTimers = {}; 
 
-    // 1. ดึงข้อมูลแบบ Real-time (ใครอัปเดต หน้าจอนี้เปลี่ยนตามทันที)
     onValue(bossesRef, (snapshot) => {
         const list = document.getElementById('bossList');
         list.innerHTML = ''; 
-
-        // ล้าง Timer เก่าทิ้งให้หมด จะได้ไม่รันซ้อนกัน
         Object.values(activeTimers).forEach(clearInterval);
         activeTimers = {};
 
         const data = snapshot.val();
         if (data) {
-            // แปลงข้อมูลเป็น Array แล้วเรียงลำดับเวลาเกิดเร็วสุดไว้บน
             const bosses = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            bosses.sort((a, b) => a.targetTime - b.targetTime);
-
-            bosses.forEach(boss => {
-                createBossCard(boss.id, boss.channel, boss.name, boss.targetTime);
-            });
+            bosses.forEach(boss => createBossCard(boss.id, boss.channel, boss.name, boss.targetTime));
         } else {
-            list.innerHTML = '<div style="text-align:center; color:#888;">ยังไม่มีรายการบอสในระบบ...</div>';
+            list.innerHTML = '<div style="text-align:center; color:#888;">ยังไม่มีรายการบอส...</div>';
         }
     });
 
-    // 2. ฟังก์ชันเพิ่มบอส (ส่งขึ้น Firebase)
     window.addBoss = function() {
         const chInput = document.getElementById('bossChannel').value;
         const nameInput = document.getElementById('bossName').value.trim();
         const minUntilSpawn = parseInt(document.getElementById('minUntilSpawn').value);
-
-        if (!nameInput || isNaN(minUntilSpawn)) {
-            alert('กรุณากรอก "จำนวนนาทีที่จะเกิด" ด้วยครับ');
-            return;
-        }
-
+        if (!nameInput || isNaN(minUntilSpawn)) { alert('ระบุเวลาด้วยครับ'); return; }
         const targetTimeValue = new Date().getTime() + (minUntilSpawn * 60000);
-
-        push(bossesRef, {
-            channel: chInput,
-            name: nameInput,
-            targetTime: targetTimeValue
-        });
-
+        push(bossesRef, { channel: chInput, name: nameInput, targetTime: targetTimeValue });
         document.getElementById('minUntilSpawn').value = '';
     };
 
-    // 3. ฟังก์ชันตีตายแล้ว (อัปเดตเวลาบน Firebase)
     window.resetBoss = function(id) {
         const newTargetTime = new Date().getTime() + (COOLDOWN_MINUTES * 60000);
-        const bossItemRef = ref(db, 'bosses/' + id);
-        update(bossItemRef, { targetTime: newTargetTime });
+        update(ref(db, 'bosses/' + id), { targetTime: newTargetTime });
     };
 
-    // 4. ฟังก์ชันลบบอส (ลบออกจาก Firebase)
     window.deleteBoss = function(id) {
-        if(confirm("แน่ใจไหมว่าจะลบบอสตัวนี้ออกจากระบบปาร์ตี้?")) {
-            const bossItemRef = ref(db, 'bosses/' + id);
-            remove(bossItemRef);
-        }
+        if(confirm("ลบไหม?")) remove(ref(db, 'bosses/' + id));
     };
 
-    // ฟังก์ชันวาดการ์ดบอส
     function createBossCard(id, channel, name, targetTimeValue) {
         const list = document.getElementById('bossList');
         const card = document.createElement('div');
         card.className = 'boss-card';
-        
+        const chNumber = parseInt(channel.replace(/\D/g, '')) || 99;
         let targetDate = new Date(targetTimeValue);
         let notified3Min = false; 
         let alertedSpawn = false; 
 
-        const infoDiv = document.createElement('div');
-        infoDiv.className = 'boss-info';
-        
-        const chBadge = document.createElement('div');
-        chBadge.className = 'ch-badge';
-        chBadge.innerText = channel;
-
-        const nameContainer = document.createElement('div');
-        const nameSpan = document.createElement('div');
-        nameSpan.className = 'boss-name';
-        nameSpan.innerText = name;
-        
-        const spawnTxt = document.createElement('div');
-        spawnTxt.className = 'spawn-time-txt';
-        const h = String(targetDate.getHours()).padStart(2, '0');
-        const m = String(targetDate.getMinutes()).padStart(2, '0');
-        spawnTxt.innerHTML = `เวลาเกิดรอบนี้: <span class="spawn-highlight">${h}:${m} น.</span>`;
-
-        nameContainer.appendChild(nameSpan);
-        nameContainer.appendChild(spawnTxt);
-        infoDiv.appendChild(chBadge);
-        infoDiv.appendChild(nameContainer);
-        
-        const rightDiv = document.createElement('div');
-        rightDiv.className = 'right-section';
-
-        const timeSpan = document.createElement('div');
-        timeSpan.className = 'timer';
-
-        const resetBtn = document.createElement('button');
-        resetBtn.className = 'btn-reset';
-        resetBtn.innerText = '⚔️ ตีตายแล้ว!';
-        resetBtn.onclick = () => window.resetBoss(id); // เรียกใช้ฟังก์ชันอัปเดต Firebase
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'btn-delete';
-        delBtn.innerText = 'ลบ';
-        delBtn.onclick = () => window.deleteBoss(id); // เรียกใช้ฟังก์ชันลบ Firebase
-
-        rightDiv.appendChild(timeSpan);
-        rightDiv.appendChild(resetBtn);
-        rightDiv.appendChild(delBtn);
-
-        card.appendChild(infoDiv);
-        card.appendChild(rightDiv);
+        card.innerHTML = `
+            <div class="boss-info">
+                <div class="ch-badge">${channel}</div>
+                <div>
+                    <div class="boss-name">${name}</div>
+                    <div class="spawn-time-txt">รอบถัดไป: <span class="spawn-highlight">${String(targetDate.getHours()).padStart(2,'0')}:${String(targetDate.getMinutes()).padStart(2,'0')} น.</span></div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="timer" id="timer-${id}">--:--:--</div>
+                <button class="btn-reset" onclick="window.resetBoss('${id}')">⚔️ ตีตายแล้ว!</button>
+                <button class="btn-delete" onclick="window.deleteBoss('${id}')">X</button>
+            </div>
+        `;
         list.appendChild(card); 
 
         function updateTimerDisplay() {
             const now = new Date().getTime();
             const distance = targetDate.getTime() - now;
+            const timerEl = document.getElementById(`timer-${id}`);
 
             if (distance <= 0) {
-                timeSpan.innerText = 'READY!';
-                timeSpan.classList.remove('warning');
-                timeSpan.classList.add('ready');
-                card.style.borderLeftColor = '#ff4757';
-            } else {
-                if (distance <= 180000) {
-                    timeSpan.classList.add('warning');
+                timerEl.innerText = 'READY!';
+                timerEl.className = 'timer ready';
+                card.style.order = -1;
+                if (!alertedSpawn) {
+                    playBeep(880, 0.5); // เสียงสูงยาวๆ ตอนบอสเกิด
+                    setTimeout(() => playBeep(880, 0.5), 600);
+                    alertedSpawn = true;
                 }
-                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((distance % (1000 * 60)) / 1000);
-                timeSpan.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            } else {
+                card.style.order = chNumber;
+                if (distance <= 180000) {
+                    timerEl.className = 'timer warning';
+                    if (!notified3Min) {
+                        playBeep(440, 0.2); // เสียงบี๊บเตือนล่วงหน้า 3 นาที
+                        notified3Min = true;
+                    }
+                } else {
+                    timerEl.className = 'timer';
+                }
+                const h = Math.floor((distance % 86400000) / 3600000);
+                const m = Math.floor((distance % 3600000) / 60000);
+                const s = Math.floor((distance % 60000) / 1000);
+                timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             }
         }
-
         updateTimerDisplay();
-        // บันทึก Interval id เอาไว้ใน Object เพื่อจะได้เคลียร์ทิ้งตอนข้อมูลอัปเดต
         activeTimers[id] = setInterval(updateTimerDisplay, 1000);
     }
 </script>
-
 </body>
 </html>
