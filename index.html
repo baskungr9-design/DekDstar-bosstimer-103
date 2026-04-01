@@ -3,57 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>N1r00t - Party Boss Timer (Sound Mode)</title>
+    <title>N1r00t - Party Boss Timer (Text Effects)</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; padding: 20px; }
-        .container { max-width: 850px; margin: 0 auto; background: #1e1e1e; padding: 25px; border-radius: 15px; box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); border: 1px solid #333; }
-        h2 { text-align: center; color: #00ff88; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
-        .sub-title { text-align: center; color: #aaa; margin-bottom: 25px; font-size: 0.9rem; }
-        .server-status { text-align: center; color: #00ff88; font-size: 0.8rem; margin-top: -20px; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f0f0f; color: #ffffff; padding: 20px; }
+        .container { max-width: 850px; margin: 0 auto; background: #1a1a1a; padding: 25px; border-radius: 12px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.15); border: 1px solid #333; }
+        h2 { text-align: center; color: #00ff88; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; text-shadow: 0 0 10px rgba(0,255,136,0.5); }
+        .sub-title { text-align: center; color: #aaa; margin-bottom: 25px; font-size: 0.9rem; letter-spacing: 1px; }
+        .server-status { text-align: center; color: #00ff88; font-size: 0.8rem; margin-top: -20px; margin-bottom: 25px; font-family: monospace; }
         
-        .input-group { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; background: #2a2a2a; padding: 20px; border-radius: 10px; border-left: 5px solid #00ff88; }
-        select, input { padding: 12px; background: #181818; border: 1px solid #444; color: white; border-radius: 6px; font-size: 15px; }
-        select { width: 110px; border-color: #00ff88; font-weight: bold; }
-        input[type="text"] { flex: 2; min-width: 200px; }
-        input[type="number"] { width: 150px; text-align: center; border-color: #ffaa00; }
-        select:focus, input:focus { outline: none; border-color: #00ff88; box-shadow: 0 0 5px rgba(0, 255, 136, 0.5); }
+        .input-group { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; align-items: flex-end; background: #222; padding: 20px; border-radius: 8px; border-left: 4px solid #00ff88; }
+        .input-wrapper { display:flex; flex-direction:column; gap:5px; flex:1; min-width: 150px; }
+        select, input { padding: 12px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 15px; transition: 0.3s; }
+        select { border-color: #00ff88; font-weight: bold; cursor: pointer; }
+        input[type="number"] { text-align: center; border-color: #ffaa00; }
+        select:focus, input:focus { outline: none; border-color: #00ff88; box-shadow: 0 0 8px rgba(0, 255, 136, 0.4); }
         
-        .btn-add { background-color: #00ff88; color: #000; padding: 12px 25px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; white-space: nowrap; flex: 1; }
-        .btn-add:hover { background-color: #00cc6a; transform: translateY(-2px); }
-        .label-text { color: #00ff88; font-size: 0.85rem; font-weight: bold; text-transform: uppercase; }
+        .btn-add { background: linear-gradient(45deg, #00ff88, #00cc6a); color: #000; padding: 12px 25px; border: none; border-radius: 4px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 16px; height: 45px; text-transform: uppercase; box-shadow: 0 4px 15px rgba(0,255,136,0.3); }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,255,136,0.5); filter: brightness(1.1); }
+        .label-text { color: #888; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
-        #bossList { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; }
+        #bossList { display: flex; flex-direction: column; gap: 15px; }
 
-        .boss-card { background: #262626; padding: 18px; border-left: 6px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: 0.3s; }
+        /* ดีไซน์การ์ดหลัก */
+        .boss-card { background: #222; padding: 20px; border-left: 5px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: all 0.4s ease; border-right: 1px solid transparent; border-top: 1px solid transparent; border-bottom: 1px solid transparent; }
         .boss-info { display: flex; align-items: center; gap: 20px; }
-        .ch-badge { background: #00ff88; color: #000; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 1.2rem; min-width: 60px; text-align: center; box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
-        .boss-name { font-size: 1.25rem; font-weight: bold; color: #fff; }
-        .spawn-time-txt { color: #bbb; font-size: 0.95rem; margin-top: 5px; }
-        .spawn-highlight { color: #ffaa00; font-weight: bold; border-bottom: 1px dashed #ffaa00; }
         
-        .right-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
-        .timer { font-size: 2rem; color: #ff4757; font-weight: bold; font-family: 'Courier New', Courier, monospace; min-width: 160px; text-align: right; text-shadow: 0 0 5px rgba(255, 71, 87, 0.3); }
-        .warning { color: #ffaa00; animation: blink 0.8s linear infinite; } 
-        .ready { color: #00ff88; animation: blink 0.5s linear infinite; } 
+        .ch-badge { background: #00ff88; color: #000; padding: 8px 18px; border-radius: 4px; font-weight: 900; font-size: 1.3rem; min-width: 60px; text-align: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); letter-spacing: 1px; }
         
-        .btn-reset { background: #ffaa00; color: #000; padding: 10px 18px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 #cc8800; }
-        .btn-reset:hover { background: #e69900; transform: translateY(2px); box-shadow: 0 2px 0 #cc8800; }
+        /* ลูกเล่น 1: ชื่อบอสสีรุ้ง (Legendary Gradient) */
+        .boss-name { 
+            font-size: 1.4rem; 
+            font-weight: 900; 
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #00ff88, #00bfff, #ffaa00, #ff4757, #00ff88);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-shift 4s ease infinite;
+            letter-spacing: 1px;
+        }
+        @keyframes gradient-shift { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
         
-        .btn-delete { background: #444; color: #ccc; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-delete:hover { background: #ff4757; color: white; }
+        .spawn-time-txt { color: #888; font-size: 0.95rem; margin-top: 5px; font-family: monospace; }
+        .spawn-highlight { color: #ffaa00; font-weight: bold; font-size: 1.1rem; }
+        
+        .right-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
+        
+        /* ตัวเลขนับถอยหลังปกติ */
+        .timer { font-size: 2.5rem; color: #ff4757; font-weight: 900; font-family: 'Courier New', Courier, monospace; min-width: 170px; text-align: right; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); transition: 0.3s; }
+        .warning { color: #ffaa00; animation: pulse-text 1s linear infinite; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); } 
+        
+        @keyframes pulse-text { 50% { opacity: 0.5; } }
 
-        @keyframes blink { 50% { opacity: 0.3; } }
+        /* ลูกเล่น 2: เอฟเฟกต์ไฟช็อต (Glitch) ตอน READY! */
+        .ready-glitch {
+            color: #fff;
+            text-shadow: 
+                0.05em 0 0 #00ffcc, 
+                -0.03em -0.04em 0 #fc00ff, 
+                0.025em 0.04em 0 #ffcc00;
+            animation: glitch 725ms infinite;
+        }
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 #00ffcc, -0.03em -0.04em 0 #fc00ff, 0.025em 0.04em 0 #ffcc00; }
+            15% { text-shadow: 0.05em 0 0 #00ffcc, -0.03em -0.04em 0 #fc00ff, 0.025em 0.04em 0 #ffcc00; }
+            16% { text-shadow: -0.05em -0.025em 0 #00ffcc, 0.025em 0.035em 0 #fc00ff, -0.05em -0.05em 0 #ffcc00; }
+            49% { text-shadow: -0.05em -0.025em 0 #00ffcc, 0.025em 0.035em 0 #fc00ff, -0.05em -0.05em 0 #ffcc00; }
+            50% { text-shadow: 0.05em 0.035em 0 #00ffcc, 0.03em 0 0 #fc00ff, 0 -0.04em 0 #ffcc00; }
+            99% { text-shadow: 0.05em 0.035em 0 #00ffcc, 0.03em 0 0 #fc00ff, 0 -0.04em 0 #ffcc00; }
+            100% { text-shadow: -0.025em 0 0 #00ffcc, -0.025em -0.04em 0 #fc00ff, -0.025em -0.05em 0 #ffcc00; }
+        }
+
+        /* ลูกเล่น 3: การ์ดเรืองแสงสีแดงตอนบอสเกิด */
+        .card-spawned {
+            background: #2a1111; /* สีพื้นหลังแดงเข้ม */
+            border-color: #ff4757;
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.5), inset 0 0 10px rgba(255, 71, 87, 0.2);
+            animation: pulse-border 1s infinite alternate;
+        }
+        @keyframes pulse-border {
+            from { box-shadow: 0 0 10px rgba(255, 71, 87, 0.3), inset 0 0 5px rgba(255, 71, 87, 0.1); }
+            to { box-shadow: 0 0 25px rgba(255, 71, 87, 0.8), inset 0 0 15px rgba(255, 71, 87, 0.4); }
+        }
+        
+        /* ปุ่มกด */
+        .btn-reset { background: transparent; color: #ffaa00; padding: 10px 18px; border: 2px solid #ffaa00; border-radius: 4px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
+        .btn-reset:hover { background: #ffaa00; color: #000; box-shadow: 0 0 15px rgba(255, 170, 0, 0.5); }
+        
+        .btn-delete { background: transparent; color: #555; padding: 10px 15px; border: 2px solid #444; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-delete:hover { background: #ff4757; border-color: #ff4757; color: white; box-shadow: 0 0 10px rgba(255,71,87,0.5); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>⚔️ Indignabt Nebulas Timer ⚔️</h2>
-    <div class="sub-title">ด่าน 103 | เสียงเตือนอัตโนมัติ 🔊</div>
-    <div class="server-status">🟢 Online & Synced via Firebase</div>
+    <h2>⚔️ Indignabt Nebulas ⚔️</h2>
+    <div class="sub-title">ด่าน 103 | เสียงเตือน & Text Effects</div>
+    <div class="server-status">/// SYNCED VIA FIREBASE ///</div>
     
     <div class="input-group">
-        <div style="display:flex; flex-direction:column; gap:5px;">
+        <div class="input-wrapper" style="flex:0; min-width:110px;">
             <span class="label-text">Channel</span>
             <select id="bossChannel">
                 <option value="CH 1">CH 1</option><option value="CH 2">CH 2</option>
@@ -64,23 +113,24 @@
             </select>
         </div>
         
-        <div style="display:flex; flex-direction:column; gap:5px; flex:2;">
-            <span class="label-text">ชื่อบอส</span>
+        <div class="input-wrapper" style="flex:2;">
+            <span class="label-text">Boss Name</span>
             <input type="text" id="bossName" value="Indignabt Nebulas (ด่าน 103)">
         </div>
         
-        <div style="display:flex; flex-direction:column; gap:5px;">
-            <span class="label-text">อีกกี่นาทีเกิด?</span>
+        <div class="input-wrapper">
+            <span class="label-text">Spawns in (Mins)</span>
             <input type="number" id="minUntilSpawn" placeholder="นาที" min="0">
         </div>
         
-        <button class="btn-add" onclick="window.addBoss()">➕ เพิ่มเข้ารายการ</button>
+        <button class="btn-add" onclick="window.addBoss()">+ Add Boss</button>
     </div>
 
     <div id="bossList"></div>
 </div>
 
 <script>
+    // ระบบเสียง
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, duration) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -89,8 +139,8 @@
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         oscillator.frequency.value = freq;
-        oscillator.type = 'sine';
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        oscillator.type = 'square'; // เปลี่ยนเป็นเสียงแนว 8-bit ให้เข้ากับ Text Effect
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
         oscillator.start();
         oscillator.stop(audioCtx.currentTime + duration);
     }
@@ -129,7 +179,7 @@
             const bosses = Object.entries(data).map(([id, val]) => ({ id, ...val }));
             bosses.forEach(boss => createBossCard(boss.id, boss.channel, boss.name, boss.targetTime));
         } else {
-            list.innerHTML = '<div style="text-align:center; color:#888;">ยังไม่มีรายการบอส...</div>';
+            list.innerHTML = '<div style="text-align:center; color:#555; font-style:italic;">-- No active bosses --</div>';
         }
     });
 
@@ -137,7 +187,7 @@
         const chInput = document.getElementById('bossChannel').value;
         const nameInput = document.getElementById('bossName').value.trim();
         const minUntilSpawn = parseInt(document.getElementById('minUntilSpawn').value);
-        if (!nameInput || isNaN(minUntilSpawn)) { alert('ระบุเวลาด้วยครับ'); return; }
+        if (!nameInput || isNaN(minUntilSpawn)) { alert('กรุณาระบุนาทีด้วยครับ'); return; }
         const targetTimeValue = new Date().getTime() + (minUntilSpawn * 60000);
         push(bossesRef, { channel: chInput, name: nameInput, targetTime: targetTimeValue });
         document.getElementById('minUntilSpawn').value = '';
@@ -149,13 +199,14 @@
     };
 
     window.deleteBoss = function(id) {
-        if(confirm("ลบไหม?")) remove(ref(db, 'bosses/' + id));
+        if(confirm("ลบ CH นี้ออกจากระบบปาร์ตี้?")) remove(ref(db, 'bosses/' + id));
     };
 
     function createBossCard(id, channel, name, targetTimeValue) {
         const list = document.getElementById('bossList');
         const card = document.createElement('div');
         card.className = 'boss-card';
+        card.id = `card-${id}`;
         const chNumber = parseInt(channel.replace(/\D/g, '')) || 99;
         let targetDate = new Date(targetTimeValue);
         let notified3Min = false; 
@@ -166,12 +217,12 @@
                 <div class="ch-badge">${channel}</div>
                 <div>
                     <div class="boss-name">${name}</div>
-                    <div class="spawn-time-txt">รอบถัดไป: <span class="spawn-highlight">${String(targetDate.getHours()).padStart(2,'0')}:${String(targetDate.getMinutes()).padStart(2,'0')} น.</span></div>
+                    <div class="spawn-time-txt">Spawn Time: <span class="spawn-highlight">${String(targetDate.getHours()).padStart(2,'0')}:${String(targetDate.getMinutes()).padStart(2,'0')} น.</span></div>
                 </div>
             </div>
             <div class="right-section">
                 <div class="timer" id="timer-${id}">--:--:--</div>
-                <button class="btn-reset" onclick="window.resetBoss('${id}')">⚔️ ตีตายแล้ว!</button>
+                <button class="btn-reset" onclick="window.resetBoss('${id}')">RESET (4H)</button>
                 <button class="btn-delete" onclick="window.deleteBoss('${id}')">X</button>
             </div>
         `;
@@ -183,24 +234,30 @@
             const timerEl = document.getElementById(`timer-${id}`);
 
             if (distance <= 0) {
+                // สภาวะ READY
                 timerEl.innerText = 'READY!';
-                timerEl.className = 'timer ready';
+                timerEl.className = 'timer ready-glitch'; // ใส่คลาสไฟช็อต
+                card.classList.add('card-spawned'); // ใส่คลาสการ์ดแดงกระพริบ
                 card.style.order = -1;
+                
                 if (!alertedSpawn) {
-                    playBeep(880, 0.5); // เสียงสูงยาวๆ ตอนบอสเกิด
-                    setTimeout(() => playBeep(880, 0.5), 600);
+                    playBeep(600, 0.1); 
+                    setTimeout(() => playBeep(800, 0.4), 150);
                     alertedSpawn = true;
                 }
             } else {
+                // สภาวะนับถอยหลัง
                 card.style.order = chNumber;
+                card.classList.remove('card-spawned'); // ถอดคลาสการ์ดแดงออก
+
                 if (distance <= 180000) {
-                    timerEl.className = 'timer warning';
+                    timerEl.className = 'timer warning'; // ใส่คลาสเตือนสีส้ม
                     if (!notified3Min) {
-                        playBeep(440, 0.2); // เสียงบี๊บเตือนล่วงหน้า 3 นาที
+                        playBeep(440, 0.2); 
                         notified3Min = true;
                     }
                 } else {
-                    timerEl.className = 'timer';
+                    timerEl.className = 'timer'; // คลาสปกติ
                 }
                 const h = Math.floor((distance % 86400000) / 3600000);
                 const m = Math.floor((distance % 3600000) / 60000);
