@@ -183,7 +183,7 @@
 </script>
 
 <script type="module">
-    // 🚨 ใส่ลิงก์ Discord Webhook ตรงนี้ 🚨
+    // 🚨 ใส่ลิงก์ Discord Webhook 🚨
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1489300472836919457/FDNB9wVa2eFCj-LtXxkghAyC2F_MjdGcdaxF0I-Y-IXBFvzYSoa69INQcUUPDL4O2tcf"; 
 
     // --- ระบบฐานข้อมูล Firebase (Online Sync) ---
@@ -208,9 +208,12 @@
     const COOLDOWN_MINUTES = 240; // รีเซ็ตทุก 4 ชั่วโมง
     let activeTimers = {}; 
 
-    // ฟังก์ชันส่งข้อความเข้า Discord
+    // 🛠️ ฟังก์ชันส่งข้อความเข้า Discord (เวอร์ชันมีแจ้งเตือน Alert เพื่อเช็คบั๊ก) 🛠️
     function sendDiscordAlert(channel, bossName, minutes) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("วาง_URL")) return; 
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("วาง_URL")) {
+            alert("❌ ระบบ: ลิงก์ Webhook ยังไม่ถูกต้องครับ");
+            return; 
+        }
 
         const payload = {
             embeds: [{
@@ -220,11 +223,24 @@
             }]
         };
 
+        console.log("กำลังส่งข้อมูลไปที่ Discord...");
+
         fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).catch(err => console.error("ส่งข้อความ Discord ไม่สำเร็จ:", err));
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log("✅ ส่งเข้า Discord สำเร็จ!");
+                // alert("ส่งเข้า Discord สำเร็จแล้ว!"); // ถ้ารำคาญเด้งเตือนลบได้ครับ
+            } else {
+                alert(`❌ ส่งไม่สำเร็จ! Discord ตอบกลับ Error Code: ${response.status}`);
+            }
+        })
+        .catch(err => {
+            alert(`❌ ไม่สามารถส่งข้อมูลได้ (อาจติด Cache หรือเบราว์เซอร์บล็อก):\n${err.message}`);
+        });
     }
 
     onValue(bossesRef, (snapshot) => {
