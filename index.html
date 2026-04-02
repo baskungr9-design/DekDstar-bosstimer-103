@@ -8,7 +8,6 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f0f0f; color: #ffffff; padding: 20px; overflow-x: hidden; }
         .container { max-width: 850px; margin: 0 auto; background: #1a1a1a; padding: 25px; border-radius: 12px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.15); border: 1px solid #333; position: relative; }
         
-        /* --- ส่วนจัดการ Header & Logo --- */
         .header-container { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; min-height: 100px; }
         .guild-logo { 
             position: absolute; 
@@ -27,7 +26,6 @@
         .sub-title { color: #aaa; margin-bottom: 5px; font-size: 0.9rem; letter-spacing: 1px; }
         .server-status { color: #00ff88; font-size: 0.8rem; font-family: monospace; }
         
-        /* --- แผงควบคุมแบบไฮบริด --- */
         .input-group { display: flex; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; align-items: flex-end; background: #222; padding: 20px; border-radius: 8px; border-left: 4px solid #00ff88; position: relative; z-index: 2; }
         .input-wrapper { display:flex; flex-direction:column; gap:5px; flex:1; min-width: 150px; }
         select, input { padding: 12px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; font-size: 15px; transition: 0.3s; }
@@ -40,22 +38,15 @@
 
         #bossList { display: flex; flex-direction: column; gap: 15px; }
 
-        /* --- ดีไซน์การ์ดหลัก --- */
         .boss-card { background: #222; padding: 20px; border-left: 5px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: all 0.3s ease; position: relative; z-index: 1; }
         .boss-info { display: flex; align-items: center; gap: 20px; }
-        
         .ch-badge { background: #00ff88; color: #000; padding: 8px 18px; border-radius: 4px; font-weight: 900; font-size: 1.3rem; min-width: 60px; text-align: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); letter-spacing: 1px; }
         
         .boss-name { 
-            font-size: 1.4rem; 
-            font-weight: 900; 
-            text-transform: uppercase;
+            font-size: 1.4rem; font-weight: 900; text-transform: uppercase;
             background: linear-gradient(90deg, #00ff88, #00bfff, #ffaa00, #ff4757, #00ff88);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradient-shift 4s ease infinite;
-            letter-spacing: 1px;
+            background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: gradient-shift 4s ease infinite; letter-spacing: 1px;
         }
         @keyframes gradient-shift { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
         
@@ -63,61 +54,27 @@
         .spawn-highlight { color: #ffaa00; font-weight: bold; font-size: 1.1rem; }
         
         .right-section { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
-        
-        .timer { font-size: 2.5rem; color: #ff4757; font-weight: 900; font-family: 'Courier New', Courier, monospace; min-width: 170px; text-align: right; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); transition: all 0.3s ease; }
-        .warning { color: #ffaa00; animation: pulse-text 1s linear infinite; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); } 
+        .timer { font-size: 2.5rem; color: #ff4757; font-weight: 900; font-family: 'Courier New', Courier, monospace; min-width: 170px; text-align: right; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); }
+        .warning { color: #ffaa00; animation: pulse-text 1s linear infinite; } 
         @keyframes pulse-text { 50% { opacity: 0.5; } }
 
-        /* 🔥 EPIC SPAWN EFFECTS 🔥 */
         .card-spawned {
-            background: linear-gradient(45deg, #3a0000, #1a0000);
-            border-left: 8px solid #ff0000;
-            border-right: 2px solid #ff0000;
-            border-top: 2px solid #ff0000;
-            border-bottom: 2px solid #ff0000;
-            z-index: 100;
-            transform: scale(1.02);
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.6), inset 0 0 20px rgba(255, 0, 0, 0.3);
+            background: linear-gradient(45deg, #3a0000, #1a0000); border: 2px solid #ff0000;
+            z-index: 100; transform: scale(1.02); box-shadow: 0 0 40px rgba(255, 0, 0, 0.6);
             animation: epic-quake 0.4s infinite, hellfire-pulse 1.5s infinite alternate;
         }
-
         @keyframes epic-quake {
-            0% { transform: translate(1px, 1px) rotate(0deg) scale(1.03); }
-            20% { transform: translate(-1px, -2px) rotate(-1deg) scale(1.03); }
-            40% { transform: translate(-2px, 1px) rotate(1deg) scale(1.03); }
-            60% { transform: translate(2px, 1px) rotate(0deg) scale(1.03); }
-            80% { transform: translate(1px, -1px) rotate(1deg) scale(1.03); }
-            100% { transform: translate(1px, 1px) rotate(0deg) scale(1.03); }
+            0%, 100% { transform: translate(1px, 1px) scale(1.02); }
+            50% { transform: translate(-1px, -1px) scale(1.02); }
         }
+        @keyframes hellfire-pulse { from { border-color: #ff0000; } to { border-color: #ffaa00; } }
 
-        @keyframes hellfire-pulse {
-            from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5), inset 0 0 10px rgba(255, 71, 87, 0.2); }
-            to { box-shadow: 0 0 60px rgba(255, 50, 0, 0.9), inset 0 0 30px rgba(255, 100, 0, 0.5); border-color: #ffaa00; }
-        }
-
-        .ready-epic {
-            font-size: 3.2rem !important; 
-            color: #ffffff;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px #fff, 0 0 20px #ffea00, 0 0 40px #ff2a00, 0 0 80px #ff0000;
-            animation: text-flare 0.1s infinite alternate;
-        }
-
-        @keyframes text-flare {
-            from { opacity: 0.9; text-shadow: 0 0 10px #fff, 0 0 20px #ffea00, 0 0 40px #ff2a00, 0 0 80px #ff0000; }
-            to { opacity: 1; text-shadow: 0 0 20px #fff, 0 0 30px #ffea00, 0 0 60px #ff2a00, 0 0 100px #ff0000, 0 0 120px #ff0000; }
-        }
+        .ready-epic { font-size: 3.2rem !important; color: #ffffff; text-shadow: 0 0 20px #ffea00, 0 0 40px #ff2a00, 0 0 80px #ff0000; }
         
-        .btn-reset { background: transparent; color: #ffaa00; padding: 10px 18px; border: 2px solid #ffaa00; border-radius: 4px; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
-        .btn-reset:hover { background: #ffaa00; color: #000; box-shadow: 0 0 15px rgba(255, 170, 0, 0.5); }
-        
-        .btn-delete { background: transparent; color: #555; padding: 10px 15px; border: 2px solid #444; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-delete:hover { background: #ff4757; border-color: #ff4757; color: white; box-shadow: 0 0 10px rgba(255,71,87,0.5); }
-        
-        @media (max-width: 600px) {
-            .header-container { flex-direction: column; }
-            .guild-logo { position: relative; width: 100px; margin-bottom: 15px; left: auto; }
-        }
+        .btn-reset { background: transparent; color: #ffaa00; padding: 10px 18px; border: 2px solid #ffaa00; border-radius: 4px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .btn-reset:hover { background: #ffaa00; color: #000; }
+        .btn-delete { background: transparent; color: #555; padding: 10px 15px; border: 2px solid #444; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-delete:hover { background: #ff4757; color: white; }
     </style>
 </head>
 <body>
@@ -125,11 +82,10 @@
 <div class="container">
     <div class="header-container">
         <img src="logo.png" alt="V-Star Logo" class="guild-logo" onerror="this.style.display='none'">
-        
         <div class="header-text">
             <h2>⚔️ V-STAR BOSS TIMER ⚔️</h2>
             <div class="sub-title">ระบบแจ้งเตือนบอส | EPIC SPAWN EFFECTS 🔥</div>
-            <div class="server-status">/// SYNCED VIA FIREBASE ///</div>
+            <div class="server-status">/// SYNCED VIA FIREBASE & DISCORD ///</div>
         </div>
     </div>
     
@@ -145,48 +101,38 @@
                 <option value="CH 9"></option><option value="CH 10"></option>
             </datalist>
         </div>
-        
         <div class="input-wrapper" style="flex:2;">
-            <span class="label-text">ชื่อบอส / ด่าน (พิมพ์เองได้เลย)</span>
+            <span class="label-text">ชื่อบอส / ด่าน</span>
             <input type="text" id="bossName" list="bossOptions" placeholder="พิมพ์ชื่อบอส หรือ แมพที่ต้องการ">
             <datalist id="bossOptions">
                 <option value="Indignabt Nebulas (ด่าน 103)"></option>
             </datalist>
         </div>
-        
         <div class="input-wrapper" style="flex:1;">
             <span class="label-text">อีกกี่นาทีเกิด?</span>
             <input type="number" id="minUntilSpawn" placeholder="นาที" min="0">
         </div>
-        
         <button class="btn-add" onclick="window.addBoss()">➕ เพิ่มเข้ารายการ</button>
     </div>
-
     <div id="bossList"></div>
 </div>
 
 <script>
-    // --- ระบบเสียงแจ้งเตือน ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, duration) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.frequency.value = freq;
-        oscillator.type = 'square';
+        oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = freq; oscillator.type = 'square';
         gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + duration);
+        oscillator.start(); oscillator.stop(audioCtx.currentTime + duration);
     }
 </script>
 
 <script type="module">
-    // 🚨 ใส่ลิงก์ Discord Webhook 🚨
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1489300472836919457/FDNB9wVa2eFCj-LtXxkghAyC2F_MjdGcdaxF0I-Y-IXBFvzYSoa69INQcUUPDL4O2tcf"; 
 
-    // --- ระบบฐานข้อมูล Firebase (Online Sync) ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
@@ -205,117 +151,50 @@
     const db = getDatabase(app);
     const bossesRef = ref(db, 'bosses');
 
-    const COOLDOWN_MINUTES = 240; // รีเซ็ตทุก 4 ชั่วโมง
-    let activeTimers = {}; 
-
-    // 🛠️ ฟังก์ชันส่งข้อความเข้า Discord (เวอร์ชันมีแจ้งเตือน Alert เพื่อเช็คบั๊ก) 🛠️
     function sendDiscordAlert(channel, bossName, minutes) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("https://discord.com/api/webhooks/1489300472836919457/FDNB9wVa2eFCj-LtXxkghAyC2F_MjdGcdaxF0I-Y-IXBFvzYSoa69INQcUUPDL4O2tcf")) {
-            alert("❌ ระบบ: ลิงก์ Webhook ยังไม่ถูกต้องครับ");
-            return; 
-        }
-
         const payload = {
+            content: "@here 📢 เตรียมตัวลุยบอส!!",
             embeds: [{
                 title: "🚨 แจ้งเตือนบอสเกิด!",
                 description: `**${bossName}** ที่ **${channel}**\nกำลังจะเกิดในอีก **${minutes}** นาที!\nเตรียมตัวลุยเลย! ⚔️`,
-                color: 65416 // รหัสสีเขียว #00ff88
+                color: 65416
             }]
         };
-
-        console.log("กำลังส่งข้อมูลไปที่ Discord...");
-
-        fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log("✅ ส่งเข้า Discord สำเร็จ!");
-                // alert("ส่งเข้า Discord สำเร็จแล้ว!"); // ถ้ารำคาญเด้งเตือนลบได้ครับ
-            } else {
-                alert(`❌ ส่งไม่สำเร็จ! Discord ตอบกลับ Error Code: ${response.status}`);
-            }
-        })
-        .catch(err => {
-            alert(`❌ ไม่สามารถส่งข้อมูลได้ (อาจติด Cache หรือเบราว์เซอร์บล็อก):\n${err.message}`);
-        });
+        fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     }
 
     onValue(bossesRef, (snapshot) => {
         const list = document.getElementById('bossList');
-        list.innerHTML = ''; 
-        Object.values(activeTimers).forEach(clearInterval);
-        activeTimers = {};
-
+        list.innerHTML = '';
         const data = snapshot.val();
         if (data) {
-            const bosses = Object.entries(data).map(([id, val]) => ({ id, ...val }));
-            bosses.forEach(boss => createBossCard(boss.id, boss.channel, boss.name, boss.targetTime));
-        } else {
-            list.innerHTML = '<div style="text-align:center; color:#555; font-style:italic;">-- ยังไม่มีรายการบอส --</div>';
+            Object.entries(data).forEach(([id, boss]) => createBossCard(id, boss.channel, boss.name, boss.targetTime));
         }
     });
 
     window.addBoss = function() {
-        const chInput = document.getElementById('bossChannel').value.trim();
-        const nameInput = document.getElementById('bossName').value.trim();
-        const minUntilSpawn = parseInt(document.getElementById('minUntilSpawn').value);
-        if (!nameInput || isNaN(minUntilSpawn)) { alert('กรุณาระบุจำนวนนาทีด้วยครับ!'); return; }
-        const targetTimeValue = new Date().getTime() + (minUntilSpawn * 60000);
-        
-        push(bossesRef, { channel: chInput || "N/A", name: nameInput, targetTime: targetTimeValue });
-        
-        // 🛠️ ฟังก์ชันส่งข้อความเข้า Discord (เวอร์ชันเด้งเตือน @here) 🛠️
-    function sendDiscordAlert(channel, bossName, minutes) {
-        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("วาง_URL")) return; 
-
-        const payload = {
-            // เพิ่มบรรทัด content นี้เข้ามา เพื่อให้บอทแท็กเรียกสมาชิกครับ!
-            content: "@here 📢 เตรียมตัวลุยบอส!!", 
-            embeds: [{
-                title: "🚨 แจ้งเตือนบอสเกิด!",
-                description: `**${bossName}** ที่ **${channel}**\nกำลังจะเกิดในอีก **${minutes}** นาที!\nเตรียมตัวลุยเลย! ⚔️`,
-                color: 65416 // รหัสสีเขียว #00ff88
-            }]
-        };
-
-        fetch(DISCORD_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).catch(err => console.error("ส่งข้อความ Discord ไม่สำเร็จ:", err));
-    }
-
-    window.resetBoss = function(id) {
-        const newTargetTime = new Date().getTime() + (COOLDOWN_MINUTES * 60000);
-        update(ref(db, 'bosses/' + id), { targetTime: newTargetTime });
+        const ch = document.getElementById('bossChannel').value.trim();
+        const name = document.getElementById('bossName').value.trim();
+        const mins = parseInt(document.getElementById('minUntilSpawn').value);
+        if (!name || isNaN(mins)) return;
+        const target = new Date().getTime() + (mins * 60000);
+        push(bossesRef, { channel: ch || "N/A", name: name, targetTime: target });
+        sendDiscordAlert(ch || "N/A", name, mins);
+        document.getElementById('minUntilSpawn').value = '';
     };
 
-    window.deleteBoss = function(id) {
-        if(confirm("ลบรายการนี้ออกจากระบบของปาร์ตี้?")) remove(ref(db, 'bosses/' + id));
-    };
+    window.resetBoss = (id) => update(ref(db, 'bosses/' + id), { targetTime: new Date().getTime() + (240 * 60000) });
+    window.deleteBoss = (id) => remove(ref(db, 'bosses/' + id));
 
     function createBossCard(id, channel, name, targetTimeValue) {
         const list = document.getElementById('bossList');
         const card = document.createElement('div');
-        card.className = 'boss-card';
-        card.id = `card-${id}`;
-        
-        // พยายามดึงตัวเลขจากชื่อ Channel เพื่อใช้เรียงลำดับเวลาใช้งานปกติ
-        const chNumber = parseInt(channel.replace(/\D/g, '')) || 99;
-        let targetDate = new Date(targetTimeValue);
-        let notified3Min = false; 
-        let alertedSpawn = false; 
-
+        card.className = 'boss-card'; card.id = `card-${id}`;
+        const targetDate = new Date(targetTimeValue);
         card.innerHTML = `
             <div class="boss-info">
                 <div class="ch-badge">${channel}</div>
-                <div>
-                    <div class="boss-name">${name}</div>
-                    <div class="spawn-time-txt">Spawn Time: <span class="spawn-highlight">${String(targetDate.getHours()).padStart(2,'0')}:${String(targetDate.getMinutes()).padStart(2,'0')} น.</span></div>
-                </div>
+                <div><div class="boss-name">${name}</div><div class="spawn-time-txt">Spawn Time: <span class="spawn-highlight">${String(targetDate.getHours()).padStart(2,'0')}:${String(targetDate.getMinutes()).padStart(2,'0')} น.</span></div></div>
             </div>
             <div class="right-section">
                 <div class="timer" id="timer-${id}">--:--:--</div>
@@ -323,47 +202,22 @@
                 <button class="btn-delete" onclick="window.deleteBoss('${id}')">X</button>
             </div>
         `;
-        list.appendChild(card); 
-
-        function updateTimerDisplay() {
-            const now = new Date().getTime();
-            const distance = targetDate.getTime() - now;
+        list.appendChild(card);
+        setInterval(() => {
+            const distance = targetTimeValue - new Date().getTime();
             const timerEl = document.getElementById(`timer-${id}`);
-
+            if (!timerEl) return;
             if (distance <= 0) {
-                // สภาวะ READY! (EPIC MODE)
-                timerEl.innerText = 'READY!';
-                timerEl.className = 'timer ready-epic'; 
-                card.classList.add('card-spawned');     
-                card.style.order = -1; // เด้งขึ้นไปอยู่บนสุด
-                
-                if (!alertedSpawn) {
-                    playBeep(600, 0.1); 
-                    setTimeout(() => playBeep(800, 0.4), 150);
-                    alertedSpawn = true;
-                }
+                timerEl.innerText = 'READY!'; timerEl.className = 'timer ready-epic';
+                card.classList.add('card-spawned'); card.style.order = -1;
             } else {
-                // สภาวะปกตินับถอยหลัง
-                card.style.order = chNumber;
-                card.classList.remove('card-spawned');
-
-                if (distance <= 180000) {
-                    timerEl.className = 'timer warning'; 
-                    if (!notified3Min) {
-                        playBeep(440, 0.2); 
-                        notified3Min = true;
-                    }
-                } else {
-                    timerEl.className = 'timer'; 
-                }
                 const h = Math.floor((distance % 86400000) / 3600000);
                 const m = Math.floor((distance % 3600000) / 60000);
                 const s = Math.floor((distance % 60000) / 1000);
                 timerEl.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                if (distance <= 180000) timerEl.className = 'timer warning';
             }
-        }
-        updateTimerDisplay();
-        activeTimers[id] = setInterval(updateTimerDisplay, 1000);
+        }, 1000);
     }
 </script>
 </body>
