@@ -267,11 +267,26 @@
         
         push(bossesRef, { channel: chInput || "N/A", name: nameInput, targetTime: targetTimeValue });
         
-        // 🔥 เรียกใช้ฟังก์ชันส่งเข้า Discord ทันทีที่กดปุ่มแอด
-        sendDiscordAlert(chInput || "N/A", nameInput, minUntilSpawn);
-        
-        document.getElementById('minUntilSpawn').value = '';
-    };
+        // 🛠️ ฟังก์ชันส่งข้อความเข้า Discord (เวอร์ชันเด้งเตือน @here) 🛠️
+    function sendDiscordAlert(channel, bossName, minutes) {
+        if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL.includes("วาง_URL")) return; 
+
+        const payload = {
+            // เพิ่มบรรทัด content นี้เข้ามา เพื่อให้บอทแท็กเรียกสมาชิกครับ!
+            content: "@here 📢 เตรียมตัวลุยบอส!!", 
+            embeds: [{
+                title: "🚨 แจ้งเตือนบอสเกิด!",
+                description: `**${bossName}** ที่ **${channel}**\nกำลังจะเกิดในอีก **${minutes}** นาที!\nเตรียมตัวลุยเลย! ⚔️`,
+                color: 65416 // รหัสสีเขียว #00ff88
+            }]
+        };
+
+        fetch(DISCORD_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).catch(err => console.error("ส่งข้อความ Discord ไม่สำเร็จ:", err));
+    }
 
     window.resetBoss = function(id) {
         const newTargetTime = new Date().getTime() + (COOLDOWN_MINUTES * 60000);
