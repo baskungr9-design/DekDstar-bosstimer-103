@@ -7,12 +7,10 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f0f0f; color: #ffffff; padding: 20px; overflow-x: hidden; }
         .container { max-width: 850px; margin: 0 auto; background: #1a1a1a; padding: 25px; border-radius: 12px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.15); border: 1px solid #333; position: relative; }
-        
         .header-container { position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; min-height: 100px; }
         .guild-logo { position: absolute; left: 0; width: 140px; max-height: 140px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0, 191, 255, 0.6)); transition: transform 0.3s; z-index: 10; }
         .guild-logo:hover { transform: scale(1.1) rotate(-3deg); }
         .header-text { text-align: center; z-index: 2; }
-        
         h2 { color: #00ff88; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 5px; margin-top: 0; text-shadow: 0 0 10px rgba(0,255,136,0.5); font-size: 1.8rem; }
         .sub-title { color: #aaa; margin-bottom: 5px; font-size: 0.9rem; letter-spacing: 1px; }
         .server-status { color: #00ff88; font-size: 0.8rem; font-family: monospace; }
@@ -29,26 +27,21 @@
         .label-text { color: #888; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
         #bossList { display: flex; flex-direction: column; gap: 15px; }
-
         .boss-card { background: #222; padding: 20px; border-left: 5px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: all 0.3s ease; position: relative; z-index: 1; }
         .boss-info { display: flex; align-items: center; gap: 20px; }
-        .ch-badge { background: #00ff88; color: #000; padding: 8px 18px; border-radius: 4px; font-weight: 900; font-size: 1.3rem; min-width: 60px; text-align: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); letter-spacing: 1px; }
-        
+        .ch-badge { background: #00ff88; color: #000; padding: 8px 18px; border-radius: 4px; font-weight: 900; font-size: 1.3rem; min-width: 60px; text-align: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); }
         .boss-name { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; background: linear-gradient(90deg, #00ff88, #00bfff, #ffaa00, #ff4757, #00ff88); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: gradient-shift 4s ease infinite; letter-spacing: 1px; }
         @keyframes gradient-shift { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-        
         .spawn-time-txt { color: #888; font-size: 0.95rem; margin-top: 5px; font-family: monospace; }
         .spawn-highlight { color: #ffaa00; font-weight: bold; font-size: 1.1rem; }
         
         .right-section { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
-        .timer { font-size: 2.5rem; color: #ff4757; font-weight: 900; font-family: 'Courier New', Courier, monospace; min-width: 170px; text-align: right; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); transition: all 0.3s ease; }
+        .timer { font-size: 2.5rem; color: #ff4757; font-weight: 900; font-family: 'Courier New', Courier, monospace; min-width: 170px; text-align: right; text-shadow: 0 0 10px rgba(255, 71, 87, 0.4); }
         .warning { color: #ffaa00; animation: pulse-text 1s linear infinite; text-shadow: 0 0 15px rgba(255, 170, 0, 0.6); } 
         @keyframes pulse-text { 50% { opacity: 0.5; } }
-
         .card-spawned { background: linear-gradient(45deg, #3a0000, #1a0000); border-left: 8px solid #ff0000; border-right: 2px solid #ff0000; border-top: 2px solid #ff0000; border-bottom: 2px solid #ff0000; z-index: 100; transform: scale(1.02); box-shadow: 0 0 40px rgba(255, 0, 0, 0.6), inset 0 0 20px rgba(255, 0, 0, 0.3); animation: epic-quake 0.4s infinite, hellfire-pulse 1.5s infinite alternate; }
         @keyframes epic-quake { 0%, 100% { transform: translate(1px, 1px) rotate(0deg) scale(1.03); } 33% { transform: translate(-1px, -2px) rotate(-1deg) scale(1.03); } 66% { transform: translate(-2px, 1px) rotate(1deg) scale(1.03); } }
         @keyframes hellfire-pulse { from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5), inset 0 0 10px rgba(255, 71, 87, 0.2); } to { box-shadow: 0 0 60px rgba(255, 50, 0, 0.9), inset 0 0 30px rgba(255, 100, 0, 0.5); border-color: #ffaa00; } }
-
         .ready-epic { font-size: 3.2rem !important; color: #ffffff; letter-spacing: 2px; text-shadow: 0 0 10px #fff, 0 0 20px #ffea00, 0 0 40px #ff2a00, 0 0 80px #ff0000; animation: text-flare 0.1s infinite alternate; }
         @keyframes text-flare { from { opacity: 0.9; text-shadow: 0 0 10px #fff, 0 0 20px #ffea00, 0 0 40px #ff2a00, 0 0 80px #ff0000; } to { opacity: 1; text-shadow: 0 0 20px #fff, 0 0 30px #ffea00, 0 0 60px #ff2a00, 0 0 100px #ff0000; } }
         
@@ -111,21 +104,16 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.frequency.value = freq;
-        oscillator.type = 'square';
+        oscillator.connect(gainNode); gainNode.connect(audioCtx.destination);
+        oscillator.frequency.value = freq; oscillator.type = 'square';
         gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + duration);
+        oscillator.start(); oscillator.stop(audioCtx.currentTime + duration);
     }
 </script>
 
 <script type="module">
-    // ลิงก์ Webhook ของ V-Star
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1489300472836919457/FDNB9wVa2eFCj-LtXxkghAyC2F_MjdGcdaxF0I-Y-IXBFvzYSoa69INQcUUPDL4O2tcf"; 
 
-    // Firebase Init
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
@@ -173,18 +161,16 @@
         }
     });
 
-    // 🛠️ อัปเกรดระบบคำนวณเวลาอัตโนมัติ
     window.addBoss = function() {
         const chInput = document.getElementById('bossChannel').value.trim();
         const nameInput = document.getElementById('bossName').value.trim();
         
-        // ดึงค่า ชั่วโมง และ นาที มาคำนวณรวมกัน
         const hInput = parseInt(document.getElementById('hourSpawn').value) || 0;
         const mInput = parseInt(document.getElementById('minUntilSpawn').value) || 0;
         const totalMinutes = (hInput * 60) + mInput;
 
         if (!nameInput) { alert('อย่าลืมใส่ชื่อบอสนะครับ!'); return; }
-        if (totalMinutes <= 0) { alert('กรุณาระบุเวลาให้ถูกต้องครับ!'); return; }
+        if (totalMinutes <= 0) { alert('กรุณาระบุเวลาให้ถูกต้องครับ (อย่างน้อย 1 นาที)!'); return; }
         
         const targetTimeValue = new Date().getTime() + (totalMinutes * 60000);
         
@@ -196,19 +182,14 @@
             notifiedReady: false
         });
         
-        // ล้างช่องกรอก
         document.getElementById('hourSpawn').value = '';
         document.getElementById('minUntilSpawn').value = '';
     };
 
-    // ✏️ ฟีเจอร์ใหม่: แก้ไขเวลาบอสที่กำลังนับถอยหลัง
     window.editBoss = function(id) {
         const input = prompt("✏️ แก้ไขเวลาเกิดบอสใหม่\n\nพิมพ์เป็น 'นาที' ตรงๆ (เช่น 150)\nหรือพิมพ์แบบย่อ (เช่น 2h 30m):");
-        if (!input) return; // ถ้ากดยกเลิก
-        
+        if (!input) return; 
         let totalMins = 0;
-        
-        // ระบบอัจฉริยะ อ่านค่า h (ชั่วโมง) และ m (นาที)
         const hMatch = input.match(/(\d+)\s*(h|ชม|ชั่วโมง)/i);
         const mMatch = input.match(/(\d+)\s*(m|น|นาที)/i);
         
@@ -217,7 +198,6 @@
             const m = mMatch ? parseInt(mMatch[1]) : 0;
             totalMins = (h * 60) + m;
         } else if (!isNaN(input)) {
-            // ถ้าพิมพ์ตัวเลขมาโดดๆ ให้ถือว่าเป็นนาที
             totalMins = parseInt(input);
         }
 
@@ -234,12 +214,8 @@
     };
 
     window.resetBoss = function(id) {
-        const newTargetTime = new Date().getTime() + (240 * 60000); // 4 ชั่วโมง
-        update(ref(db, 'bosses/' + id), { 
-            targetTime: newTargetTime,
-            notified3m: false,
-            notifiedReady: false
-        });
+        const newTargetTime = new Date().getTime() + (240 * 60000);
+        update(ref(db, 'bosses/' + id), { targetTime: newTargetTime, notified3m: false, notifiedReady: false });
     };
 
     window.deleteBoss = function(id) {
@@ -267,7 +243,7 @@
             </div>
             <div class="right-section">
                 <div class="timer" id="timer-${id}">--:--:--</div>
-                <button class="btn-edit" onclick="window.editBoss('${id}')">✏️ แก้ไข</button>
+                <button class="btn-edit" onclick="window.editBoss('${id}')">✏️ แก้</button>
                 <button class="btn-reset" onclick="window.resetBoss('${id}')">RESET</button>
                 <button class="btn-delete" onclick="window.deleteBoss('${id}')">X</button>
             </div>
@@ -288,7 +264,9 @@
                     playBeep(600, 0.1); setTimeout(() => playBeep(800, 0.4), 150);
                     alertedLocalReady = true;
                 }
-                if (bossData.notifiedReady === false) {
+                
+                // 🔥 เช็คแบบใหม่ ป้องกันข้อมูลเก่าพัง 🔥
+                if (!bossData.notifiedReady) {
                     bossData.notifiedReady = true; 
                     update(ref(db, 'bosses/' + id), { notifiedReady: true });
                     sendDiscordNotify(bossData.channel, bossData.name, 'READY');
@@ -305,7 +283,9 @@
                 if (distance <= 180000) {
                     timerEl.className = 'timer warning'; 
                     if (!alertedLocal3Min) { playBeep(440, 0.2); alertedLocal3Min = true; }
-                    if (bossData.notified3m === false) {
+                    
+                    // 🔥 เช็คแบบใหม่ ป้องกันข้อมูลเก่าพัง 🔥
+                    if (!bossData.notified3m) {
                         bossData.notified3m = true; 
                         update(ref(db, 'bosses/' + id), { notified3m: true });
                         sendDiscordNotify(bossData.channel, bossData.name, '3MIN');
