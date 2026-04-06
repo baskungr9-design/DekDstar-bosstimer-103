@@ -33,14 +33,7 @@
         .boss-card { background: #222; padding: 20px; border-left: 5px solid #00ff88; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; transition: all 0.3s ease; position: relative; z-index: 1; }
         .boss-info { display: flex; align-items: center; gap: 15px; }
         
-        /* 🔥 ป้ายบอกลำดับคิว (ทำให้กดคลิกได้) 🔥 */
-        .sequence-badge { 
-            background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; width: 45px; height: 45px; border-radius: 50%; 
-            display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 1.4rem; 
-            box-shadow: 0 0 15px rgba(255, 71, 87, 0.5); border: 2px solid #1a1a1a; margin-right: 5px;
-            cursor: pointer; transition: 0.2s;
-        }
-        .sequence-badge:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 20px rgba(255, 71, 87, 0.8); border-color: white; }
+        .sequence-badge { background: linear-gradient(135deg, #ff4757, #ff6b81); color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 1.4rem; box-shadow: 0 0 15px rgba(255, 71, 87, 0.5); border: 2px solid #1a1a1a; margin-right: 5px; }
         .sequence-hidden { display: none; }
 
         .ch-badge { background: #00ff88; color: #000; padding: 8px 15px; border-radius: 4px; font-weight: 900; font-size: 1.2rem; min-width: 50px; text-align: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); letter-spacing: 1px; }
@@ -208,38 +201,57 @@
         document.getElementById('minUntilSpawn').value = '';
     };
 
+    // 🔥 ฟังก์ชันแก้ไขอัปเกรด: ถามเวลา แล้วตามด้วยถามคิว 🔥
     window.editBoss = function(id) {
-        const input = prompt("✏️ แก้ไขเวลาเกิดบอสใหม่\n\nพิมพ์เป็น 'นาที' ตรงๆ (เช่น 150)\nหรือพิมพ์แบบย่อ (เช่น 2h 30m):");
-        if (!input) return; 
-        let totalMins = 0;
-        const hMatch = input.match(/(\d+)\s*(h|ชม|ชั่วโมง)/i);
-        const mMatch = input.match(/(\d+)\s*(m|น|นาที)/i);
+        // 1️⃣ เด้งถามเรื่อง "เวลา"
+        const timeInput = prompt("1️⃣ แก้ไขเวลาเกิดใหม่ (เช่น 150 หรือ 2h 30m)\n\n👉 ถ้าไม่ต้องการแก้เวลา ให้ปล่อยว่างแล้วกด OK");
+        let newTargetTime = null;
         
-        if (hMatch || mMatch) {
-            const h = hMatch ? parseInt(hMatch[1]) : 0;
-            const m = mMatch ? parseInt(mMatch[1]) : 0;
-            totalMins = (h * 60) + m;
-        } else if (!isNaN(input)) {
-            totalMins = parseInt(input);
+        if (timeInput !== null && timeInput.trim() !== "") {
+            let totalMins = 0;
+            const hMatch = timeInput.match(/(\d+)\s*(h|ชม|ชั่วโมง)/i);
+            const mMatch = timeInput.match(/(\d+)\s*(m|น|นาที)/i);
+            
+            if (hMatch || mMatch) {
+                const h = hMatch ? parseInt(hMatch[1]) : 0;
+                const m = mMatch ? parseInt(mMatch[1]) : 0;
+                totalMins = (h * 60) + m;
+            } else if (!isNaN(timeInput)) {
+                totalMins = parseInt(timeInput);
+            }
+
+            if (totalMins > 0) {
+                newTargetTime = new Date().getTime() + (totalMins * 60000);
+            } else {
+                alert('❌ รูปแบบเวลาไม่ถูกต้อง (ข้ามการแก้เวลา)');
+            }
         }
 
-        if (totalMins > 0) {
-            const newTargetTime = new Date().getTime() + (totalMins * 60000);
-            update(ref(db, 'bosses/' + id), { targetTime: newTargetTime, notified3m: false, notifiedReady: false });
-        } else {
-            alert('❌ รูปแบบเวลาไม่ถูกต้องครับ ยกเลิกการแก้ไข');
-        }
-    };
+        // 2️⃣ เด้งถามเรื่อง "คิว" ต่อทันที
+        const orderInput = prompt("2️⃣ แก้ไขคิวล่าบอส (ใส่ตัวเลข 1, 2, 3...)\n\n👉 ถ้าไม่ต้องการแก้คิว ให้ปล่อยว่างแล้วกด OK\n👉 พิมพ์ 0 เพื่อลบคิวออก");
+        let newOrder = null;
 
-    // 🔥 ฟังก์ชันใหม่: แก้ไขลำดับคิว 🔥
-    window.editOrder = function(id) {
-        const newOrderInput = prompt("🔢 แก้ไขคิวล่าบอส\n(ใส่ตัวเลข 1, 2, 3... หรือปล่อยว่างเพื่อลบคิวออก)");
-        if (newOrderInput === null) return; // กดยกเลิก
-        
-        const newOrder = parseInt(newOrderInput);
-        update(ref(db, 'bosses/' + id), { 
-            huntOrder: isNaN(newOrder) ? 999 : newOrder 
-        });
+        if (orderInput !== null && orderInput.trim() !== "") {
+            const parsedOrder = parseInt(orderInput);
+            if (!isNaN(parsedOrder)) {
+                newOrder = parsedOrder === 0 ? 999 : parsedOrder;
+            }
+        }
+
+        // 3️⃣ ส่งข้อมูลที่แก้ไขไปอัปเดตพร้อมกัน
+        let updates = {};
+        if (newTargetTime !== null) {
+            updates.targetTime = newTargetTime;
+            updates.notified3m = false;
+            updates.notifiedReady = false;
+        }
+        if (newOrder !== null) {
+            updates.huntOrder = newOrder;
+        }
+
+        if (Object.keys(updates).length > 0) {
+            update(ref(db, 'bosses/' + id), updates);
+        }
     };
 
     window.resetBoss = function(id) {
@@ -266,8 +278,7 @@
 
         card.innerHTML = `
             <div class="boss-info">
-                <div class="sequence-badge ${lockOrder === 999 ? 'sequence-hidden' : ''}" onclick="window.editOrder('${id}')" title="คลิกเพื่อแก้คิวล่าบอส">#${displayOrder}</div>
-                
+                <div class="sequence-badge ${lockOrder === 999 ? 'sequence-hidden' : ''}">#${displayOrder}</div>
                 <div class="ch-badge">${bossData.channel}</div>
                 <div>
                     <div class="boss-name">${bossData.name}</div>
@@ -276,7 +287,7 @@
             </div>
             <div class="right-section">
                 <div class="timer" id="timer-${id}">--:--:--</div>
-                <button class="btn-edit" onclick="window.editBoss('${id}')">✏️ แก้เวลา</button>
+                <button class="btn-edit" onclick="window.editBoss('${id}')">✏️ แก้ไข</button>
                 <button class="btn-reset" onclick="window.resetBoss('${id}')">RESET</button>
                 <button class="btn-delete" onclick="window.deleteBoss('${id}')">X</button>
             </div>
