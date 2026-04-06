@@ -71,7 +71,7 @@
         <img src="logo.png" alt="V-Star Logo" class="guild-logo" onerror="this.style.display='none'">
         <div class="header-text">
             <h2>⚔️ V-STAR BOSS TIMER ⚔️</h2>
-            <div class="sub-title">ระบบจัดคิวล่าบอส & แจ้งเตือนอัจฉริยะ 🔥</div>
+            <div class="sub-title">ระบบเลื่อนคิวอัตโนมัติ & จัดเรียง CH อัจฉริยะ 🔥</div>
             <div class="server-status">/// SYNCED VIA FIREBASE ///</div>
         </div>
     </div>
@@ -126,8 +126,9 @@
 <script type="module">
     const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1489300472836919457/FDNB9wVa2eFCj-LtXxkghAyC2F_MjdGcdaxF0I-Y-IXBFvzYSoa69INQcUUPDL4O2tcf"; 
 
+    // 🔥 นำเข้าคำสั่ง get เพิ่มเติม เพื่อดึงข้อมูลมาคำนวณคิว
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, push, onValue, remove, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCypbGzxD2cr9xt1LaPDpClQ_8ta8ElKqs",
@@ -201,66 +202,100 @@
         document.getElementById('minUntilSpawn').value = '';
     };
 
-    // 🔥 ฟังก์ชันแก้ไขอัปเกรด: ถามเวลา แล้วตามด้วยถามคิว 🔥
     window.editBoss = function(id) {
-        // 1️⃣ เด้งถามเรื่อง "เวลา"
-        const timeInput = prompt("1️⃣ แก้ไขเวลาเกิดใหม่ (เช่น 150 หรือ 2h 30m)\n\n👉 ถ้าไม่ต้องการแก้เวลา ให้ปล่อยว่างแล้วกด OK");
+        const timeInput = prompt("1️⃣ แก้ไขเวลาเกิดใหม่ (เช่น 150 หรือ 2h 30m)\n\n👉 ปล่อยว่างถ้าไม่ต้องการแก้เวลา");
         let newTargetTime = null;
-        
         if (timeInput !== null && timeInput.trim() !== "") {
             let totalMins = 0;
             const hMatch = timeInput.match(/(\d+)\s*(h|ชม|ชั่วโมง)/i);
             const mMatch = timeInput.match(/(\d+)\s*(m|น|นาที)/i);
-            
             if (hMatch || mMatch) {
-                const h = hMatch ? parseInt(hMatch[1]) : 0;
-                const m = mMatch ? parseInt(mMatch[1]) : 0;
-                totalMins = (h * 60) + m;
+                totalMins = (hMatch ? parseInt(hMatch[1]) : 0) * 60 + (mMatch ? parseInt(mMatch[1]) : 0);
             } else if (!isNaN(timeInput)) {
                 totalMins = parseInt(timeInput);
             }
-
-            if (totalMins > 0) {
-                newTargetTime = new Date().getTime() + (totalMins * 60000);
-            } else {
-                alert('❌ รูปแบบเวลาไม่ถูกต้อง (ข้ามการแก้เวลา)');
-            }
+            if (totalMins > 0) newTargetTime = new Date().getTime() + (totalMins * 60000);
+            else alert('❌ รูปแบบเวลาไม่ถูกต้อง (ข้ามการแก้เวลา)');
         }
 
-        // 2️⃣ เด้งถามเรื่อง "คิว" ต่อทันที
-        const orderInput = prompt("2️⃣ แก้ไขคิวล่าบอส (ใส่ตัวเลข 1, 2, 3...)\n\n👉 ถ้าไม่ต้องการแก้คิว ให้ปล่อยว่างแล้วกด OK\n👉 พิมพ์ 0 เพื่อลบคิวออก");
+        const orderInput = prompt("2️⃣ แก้ไขคิวล่าบอส (ใส่ตัวเลข 1, 2, 3...)\n\n👉 ปล่อยว่างถ้าไม่ต้องการแก้\n👉 พิมพ์ 0 เพื่อลบคิว");
         let newOrder = null;
-
         if (orderInput !== null && orderInput.trim() !== "") {
             const parsedOrder = parseInt(orderInput);
-            if (!isNaN(parsedOrder)) {
-                newOrder = parsedOrder === 0 ? 999 : parsedOrder;
-            }
+            if (!isNaN(parsedOrder)) newOrder = parsedOrder === 0 ? 999 : parsedOrder;
         }
 
-        // 3️⃣ ส่งข้อมูลที่แก้ไขไปอัปเดตพร้อมกัน
         let updates = {};
         if (newTargetTime !== null) {
-            updates.targetTime = newTargetTime;
-            updates.notified3m = false;
-            updates.notifiedReady = false;
+            updates[`${id}/targetTime`] = newTargetTime;
+            updates[`${id}/notified3m`] = false;
+            updates[`${id}/notifiedReady`] = false;
         }
-        if (newOrder !== null) {
-            updates.huntOrder = newOrder;
-        }
-
-        if (Object.keys(updates).length > 0) {
-            update(ref(db, 'bosses/' + id), updates);
-        }
+        if (newOrder !== null) updates[`${id}/huntOrder`] = newOrder;
+        
+        if (Object.keys(updates).length > 0) update(ref(db, 'bosses'), updates);
     };
 
+    // 🔥 ระบบ Auto-Shift: เมื่อกด RESET ให้ปลดคิวตัวเอง แล้วดึงคิวคนอื่นขึ้นมาแทน
     window.resetBoss = function(id) {
-        const newTargetTime = new Date().getTime() + (240 * 60000);
-        update(ref(db, 'bosses/' + id), { targetTime: newTargetTime, notified3m: false, notifiedReady: false });
+        const dbRef = ref(db, 'bosses');
+        get(dbRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const bosses = snapshot.val();
+                const currentBoss = bosses[id];
+                if (!currentBoss) return;
+
+                const oldOrder = currentBoss.huntOrder || 999;
+                const newTargetTime = new Date().getTime() + (240 * 60000); // ดีดกลับไป 4 ชม.
+
+                let updates = {};
+                // อัปเดตข้อมูลตัวที่เพิ่งตาย
+                updates[`${id}/targetTime`] = newTargetTime;
+                updates[`${id}/notified3m`] = false;
+                updates[`${id}/notifiedReady`] = false;
+                updates[`${id}/huntOrder`] = 999; // ปลดคิวทิ้ง
+
+                // เลื่อนคิวคนอื่นขึ้นมา (ถ้าตัวที่ตายเคยมีคิว)
+                if (oldOrder < 999) {
+                    for (let key in bosses) {
+                        let otherOrder = bosses[key].huntOrder || 999;
+                        // ถ้าคนอื่นคิวมากกว่าตัวที่ตาย (เช่น ตัวที่ตายคือ 1, คนอื่นคือ 2,3) ให้ลดเลขคิวลง 1
+                        if (key !== id && otherOrder > oldOrder && otherOrder < 999) {
+                            updates[`${key}/huntOrder`] = otherOrder - 1;
+                        }
+                    }
+                }
+                update(ref(db, 'bosses'), updates);
+            }
+        });
     };
 
+    // 🔥 ระบบ Auto-Shift: เมื่อกดลบ (X) ก็ดึงคิวขึ้นมาแทนเช่นกัน
     window.deleteBoss = function(id) {
-        if(confirm("ลบรายการนี้ออกจากระบบของปาร์ตี้?")) remove(ref(db, 'bosses/' + id));
+        if(confirm("ลบรายการนี้ออกจากระบบของปาร์ตี้?")) {
+            const dbRef = ref(db, 'bosses');
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const bosses = snapshot.val();
+                    const currentBoss = bosses[id];
+                    if (!currentBoss) return;
+
+                    const oldOrder = currentBoss.huntOrder || 999;
+                    let updates = {};
+                    updates[id] = null; // สั่งลบ
+                    
+                    if (oldOrder < 999) {
+                        for (let key in bosses) {
+                            let otherOrder = bosses[key].huntOrder || 999;
+                            if (key !== id && otherOrder > oldOrder && otherOrder < 999) {
+                                updates[`${key}/huntOrder`] = otherOrder - 1;
+                            }
+                        }
+                    }
+                    update(ref(db, 'bosses'), updates);
+                }
+            });
+        }
     };
 
     function createBossCard(id, bossData) {
@@ -271,6 +306,9 @@
         
         const lockOrder = bossData.huntOrder || 999;
         const displayOrder = lockOrder !== 999 ? lockOrder : '-';
+        
+        // ดึงตัวเลขชาแนลออกมา เพื่อเอาไว้จัดเรียง
+        const chNumber = parseInt(bossData.channel.replace(/\D/g, '')) || 99;
 
         let targetDate = new Date(bossData.targetTime);
         let alertedLocalReady = false;
@@ -300,11 +338,17 @@
             const timerEl = document.getElementById(`timer-${id}`);
             if (!timerEl) return;
 
-            card.style.order = lockOrder;
+            // 🔥 ระบบจัดเรียงอัจฉริยะ 🔥
+            // ถ้ามีคิว -> ให้จัดตามคิว (1,2,3)
+            // ถ้าไม่มีคิว -> ให้เอา 1000 + เลขชาแนล (เช่น CH7 จะได้ 1007 แปลว่าจะไปเรียงอยู่ข้างล่าง เรียงตาม CH สวยงาม)
+            card.style.order = lockOrder === 999 ? 1000 + chNumber : lockOrder;
 
             if (distance <= 0) {
                 timerEl.innerText = 'READY!'; timerEl.className = 'timer ready-epic'; 
                 card.classList.add('card-spawned'); 
+                
+                // ถ้าบอส READY แต่ไม่มีคิว ให้ดีดขึ้นไปบนสุด (คนที่ลืมจัดคิวจะได้เห็น)
+                if (lockOrder === 999) card.style.order = -1;
                 
                 if (!alertedLocalReady) {
                     playBeep(600, 0.1); setTimeout(() => playBeep(800, 0.4), 150);
